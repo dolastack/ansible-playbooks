@@ -1,0 +1,32 @@
+---
+- hosts:
+      34.212.180.168
+  tasks:
+    - name: install Packages
+      yum:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - python35-pip.noarch 
+        - python27-pip.noarch 
+        - python35-virtualenv.noarch
+        - mysql56-server
+        - mysql56-devel
+        - git
+        - tcl
+        - '@Development Libraries'
+        - '@Development tools'
+
+    - name: Download redis
+      get_url:
+        url:  http://download.redis.io/releases/redis-stable.tar.gz
+        dest: /usr/src/
+    - name: Uncompress redis
+      unarchive:
+        src: /usr/src/redis-stable.tar.gz
+        dest: /usr/src/
+        remote_src: True
+    - name: make redis
+      shell: make distclean && make && make test
+      args:
+        chdir: /usr/src/redis-stable
